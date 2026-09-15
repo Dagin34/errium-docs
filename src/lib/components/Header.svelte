@@ -31,7 +31,7 @@
 <header
 	class="sticky top-0 z-40 border-b bg-bg/80 backdrop-blur-md"
 >
-	<div class="flex items-center gap-4 px-6 py-3">
+	<div class="mx-auto flex w-full max-w-shell items-center gap-4 px-6 py-3">
 		<button
 			bind:this={menuButton}
 			type="button"

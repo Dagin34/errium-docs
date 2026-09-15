@@ -101,10 +101,10 @@
 	/>
 
 	{#if isLanding}
-		<main id="main" tabindex="-1" class="mx-auto w-full max-w-content px-6 py-24">
+		<main id="main" tabindex="-1" class="mx-auto w-full max-w-shell px-6 pt-24">
 			{@render children()}
 		</main>
-		<div class="mx-auto w-full max-w-content px-6">
+		<div class="mx-auto w-full max-w-shell px-6">
 			<Footer />
 		</div>
 	{:else}

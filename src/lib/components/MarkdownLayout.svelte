@@ -22,8 +22,15 @@
 <svelte:head>
 	<title>{title} · {SITE.name}</title>
 	<meta name="description" content={description} />
+	<link rel="canonical" href={`${SITE.url}${page.url.pathname}`} />
+	<meta property="og:type" content="article" />
+	<meta property="og:url" content={`${SITE.url}${page.url.pathname}`} />
+	<meta property="og:site_name" content={SITE.name} />
 	<meta property="og:title" content={`${title} · ${SITE.name}`} />
 	<meta property="og:description" content={description} />
+	<meta name="twitter:card" content="summary" />
+	<meta name="twitter:title" content={`${title} · ${SITE.name}`} />
+	<meta name="twitter:description" content={description} />
 </svelte:head>
 
 <article data-pagefind-body>

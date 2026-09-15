@@ -20,7 +20,11 @@ const config = {
 	},
 
 	kit: {
-		adapter: adapter()
+		adapter: adapter(),
+		prerender: {
+			// Nothing links to the sitemap, so the crawler would never find it.
+			entries: ['*', '/sitemap.xml']
+		}
 	}
 };
 

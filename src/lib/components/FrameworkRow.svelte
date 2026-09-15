@@ -7,15 +7,21 @@
 	];
 </script>
 
-<!-- Monochrome wordmarks, not vendor logos: no brand assets to misuse. -->
-<ul class="grid gap-px overflow-hidden rounded border sm:grid-cols-2">
+<!--
+	Monochrome wordmarks, not vendor logos: no brand assets to misuse.
+
+	The 1px gaps let the container's border colour show through between opaque
+	cells, so the dividers are hairlines that hold at any column count rather
+	than per-cell borders that need unpicking at each breakpoint.
+-->
+<ul class="grid gap-px overflow-hidden rounded border bg-border sm:grid-cols-2 lg:grid-cols-4">
 	{#each frameworks as framework (framework.name)}
-		<li>
+		<li class="flex">
 			<a
 				href={framework.href}
-				class="flex h-full flex-col gap-1 border-b p-6 transition-colors duration-150 ease-out hover:bg-bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-fg"
+				class="flex flex-1 flex-col gap-2 bg-bg p-6 transition-colors duration-150 ease-out hover:bg-bg-subtle focus-visible:outline-2 focus-visible:-outline-offset-2 focus-visible:outline-fg"
 			>
-				<span class="text-h3 text-fg">{framework.name}</span>
+				<span class="text-h3 text-balance text-fg">{framework.name}</span>
 				<span class="font-mono text-eyebrow text-fg-muted">{framework.note}</span>
 			</a>
 		</li>

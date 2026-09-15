@@ -5,34 +5,44 @@
 	import InstallCommand from './InstallCommand.svelte';
 </script>
 
+<!--
+	The hero sits in the full shell width, but its text does not: a 44px
+	headline set across the whole screen has no measure. Each element is
+	capped to what reads well at its own size, so widening the page gives the
+	hero air rather than stretching the sentence.
+-->
 <section class="flex flex-col gap-8">
-	<h1 class="text-hero text-fg">
+	<h1 class="max-w-4xl text-balance text-hero text-fg">
 		Every error your API returns looks the same, no matter what threw it.
 	</h1>
 
-	<p class="max-w-content text-fg-muted">
+	<p class="max-w-content text-pretty text-fg-muted">
 		Errium normalizes uncaught exceptions, HTTP exceptions and validation errors into one
 		consistent, frontend-safe JSON response — across FastAPI, Flask, Django Ninja and Django
 		REST Framework.
 	</p>
 
-	<InstallCommand />
+	<div class="flex max-w-content flex-col gap-4 sm:flex-row sm:items-center">
+		<div class="min-w-0 flex-1">
+			<InstallCommand />
+		</div>
 
-	<div class="flex flex-wrap gap-3">
-		<a
-			href="/docs/quickstart"
-			class="flex items-center gap-2 rounded border border-border-strong px-4 py-2 text-nav text-fg transition-colors duration-150 ease-out hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-		>
-			Get started
-			<ArrowRight size={14} aria-hidden="true" />
-		</a>
+		<div class="flex shrink-0 gap-3">
+			<a
+				href="/docs/quickstart"
+				class="flex items-center gap-2 rounded border border-border-strong px-4 py-2 text-nav text-fg transition-colors duration-150 ease-out hover:bg-bg-subtle focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			>
+				Get started
+				<ArrowRight size={14} aria-hidden="true" />
+			</a>
 
-		<a
-			href={SITE.links.repo}
-			class="flex items-center gap-2 rounded border px-4 py-2 text-nav text-fg-muted transition-colors duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
-		>
-			<GithubMark size={14} />
-			GitHub
-		</a>
+			<a
+				href={SITE.links.repo}
+				class="flex items-center gap-2 rounded border px-4 py-2 text-nav text-fg-muted transition-colors duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			>
+				<GithubMark size={14} />
+				GitHub
+			</a>
+		</div>
 	</div>
 </section>

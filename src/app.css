@@ -107,6 +107,11 @@
 	--container-sidebar: 240px;
 	--container-toc: 200px;
 	--container-shell: 1600px;
+
+	/* Landing grid: numbered markers live in the margin column, every piece of
+	   content shares the second one, so the hero and the sections below it
+	   align to a single left edge. First value matches --container-toc. */
+	--grid-template-columns-landing: 200px 1fr;
 }
 
 /* Header height, and the viewport remainder beneath it. The sticky columns
