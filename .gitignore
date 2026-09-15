@@ -24,3 +24,6 @@ vite.config.ts.timestamp-*
 
 # Vercel adapter output
 .vercel
+
+# Playwright MCP artifacts
+.playwright-mcp

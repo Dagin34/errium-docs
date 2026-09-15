@@ -24,7 +24,7 @@
 	<span class="mt-1 shrink-0 text-fg-muted">
 		<Icon size={16} aria-hidden="true" />
 	</span>
-	<div class="text-fg-muted [&>:first-child]:mt-0 [&>:last-child]:mb-0">
+	<div class="min-w-0 text-fg-muted [&>:first-child]:mt-0 [&>:last-child]:mb-0">
 		<span class="sr-only">{labels[variant]}:</span>
 		{@render children()}
 	</div>

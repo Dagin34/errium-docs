@@ -13,8 +13,8 @@
 
 	let drawerOpen = $state(false);
 	let searchOpen = $state(false);
-	let searchTrigger = $state<HTMLElement>();
 	let menuButton = $state<HTMLElement>();
+	let searchButton = $state<HTMLElement>();
 
 	// The landing page runs full-bleed; every other route gets the docs shell.
 	const isLanding = $derived(page.url.pathname === '/');
@@ -54,12 +54,10 @@
 <div class="min-h-dvh">
 	<Header
 		bind:menuButton
+		bind:searchButton
 		{drawerOpen}
 		onmenu={() => (drawerOpen = !drawerOpen)}
-		onsearch={(trigger) => {
-			searchTrigger = trigger;
-			searchOpen = true;
-		}}
+		onsearch={() => (searchOpen = true)}
 	/>
 
 	{#if isLanding}
@@ -121,8 +119,10 @@
 	</div>
 {/if}
 
+<!-- The trigger is the header button regardless of how the dialog was
+     opened, so Esc always returns focus somewhere visible. -->
 <SearchDialog
 	bind:open={searchOpen}
-	trigger={searchTrigger}
+	trigger={searchButton}
 	onclose={() => (searchOpen = false)}
 />

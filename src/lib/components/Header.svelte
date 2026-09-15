@@ -11,11 +11,21 @@
 		drawerOpen: boolean;
 		/** Exposed so the drawer can return focus here when it closes. */
 		menuButton?: HTMLElement;
+		/**
+		 * Exposed so the search dialog can restore focus here however it was
+		 * opened — including via the keyboard shortcut, which never touches
+		 * this button.
+		 */
+		searchButton?: HTMLElement;
 	}
 
-	let { onmenu, onsearch, drawerOpen, menuButton = $bindable() }: Props = $props();
-
-	let searchTrigger = $state<HTMLButtonElement>();
+	let {
+		onmenu,
+		onsearch,
+		drawerOpen,
+		menuButton = $bindable(),
+		searchButton = $bindable()
+	}: Props = $props();
 </script>
 
 <header
@@ -45,9 +55,9 @@
 		<div class="flex-1"></div>
 
 		<button
-			bind:this={searchTrigger}
+			bind:this={searchButton}
 			type="button"
-			onclick={() => searchTrigger && onsearch(searchTrigger)}
+			onclick={() => searchButton && onsearch(searchButton)}
 			aria-label="Search documentation"
 			class="flex items-center gap-2 rounded border px-2 py-1 text-nav text-fg-muted transition-colors duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 		>
