@@ -7,9 +7,18 @@ import { mdsvexConfig } from './mdsvex.config.js';
 const config = {
 	extensions: ['.svelte', '.md'],
 	preprocess: [vitePreprocess(), mdsvex(mdsvexConfig)],
+
 	compilerOptions: {
-		runes: true
+		// Runes everywhere we write code, but not for MDsveX output: its layout
+		// wrapper passes `$$props` through, which runes mode rejects. Scoping it
+		// per file keeps every .svelte we author in runes mode regardless.
+		runes: ({ filename }) => {
+			if (filename.split(/[/\\]/).includes('node_modules')) return undefined;
+			if (filename.endsWith('.md')) return false;
+			return true;
+		}
 	},
+
 	kit: {
 		adapter: adapter()
 	}

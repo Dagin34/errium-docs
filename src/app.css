@@ -1,19 +1,153 @@
-@import "tailwindcss";
+/* Self-hosted Geist. Sans upright only; mono carries a real italic face
+   because code comments are the one italic on the site. */
+@import '@fontsource-variable/geist/wght.css';
+@import '@fontsource-variable/geist-mono/wght.css';
+@import '@fontsource-variable/geist-mono/wght-italic.css';
+@import 'tailwindcss';
 
+/* Code-block chrome is assembled as utility strings in the MDsveX highlighter
+   and by a Shiki transformer, so point the scanner at both. */
+@source "../mdsvex.config.js";
+@source "./lib/shiki.js";
+
+/* Dark is the default. Light is the opt-in override. */
 :root {
-  --bg: #0A0A0A;
-  --fg: #EDEDED;
-  --syn-keyword: #8AA9C9;
-  --syn-comment: #848484;
+	--bg: #0a0a0a;
+	--bg-subtle: #111111;
+	--bg-elevated: #161616;
+	--border-c: rgba(255, 255, 255, 0.08);
+	--border-strong: rgba(255, 255, 255, 0.14);
+	--fg: #ededed;
+	--fg-muted: #a1a1a1;
+	--fg-subtle: #6e6e6e;
+	--fg-faint: #4a4a4a;
+
+	/* syntax — deliberately desaturated, reads near-monochrome at a glance */
+	--syn-keyword: #8aa9c9;
+	--syn-string: #b3a48a;
+	--syn-comment: #848484;
+	--syn-number: #b3a48a;
+	--syn-punctuation: #8a8a8a;
+	--syn-plain: #ededed;
+}
+
+[data-theme='light'] {
+	--bg: #ffffff;
+	--bg-subtle: #fafafa;
+	--bg-elevated: #f5f5f5;
+	--border-c: rgba(0, 0, 0, 0.09);
+	--border-strong: rgba(0, 0, 0, 0.16);
+	--fg: #0a0a0a;
+	--fg-muted: #5a5a5a;
+	--fg-subtle: #8a8a8a;
+	--fg-faint: #b4b4b4;
+
+	--syn-keyword: #4a6b8a;
+	--syn-string: #7a6a4a;
+	--syn-comment: #6b6b6b;
+	--syn-number: #7a6a4a;
+	--syn-punctuation: #6e6e6e;
+	--syn-plain: #0a0a0a;
 }
 
 @theme inline {
-  --color-bg: var(--bg);
-  --color-fg: var(--fg);
-  --text-body: 14px;
-  --text-body--line-height: 1.7;
+	--color-bg: var(--bg);
+	--color-bg-subtle: var(--bg-subtle);
+	--color-bg-elevated: var(--bg-elevated);
+	--color-border: var(--border-c);
+	--color-border-strong: var(--border-strong);
+	--color-fg: var(--fg);
+	--color-fg-muted: var(--fg-muted);
+	--color-fg-subtle: var(--fg-subtle);
+	--color-fg-faint: var(--fg-faint);
+
+	--font-sans: 'Geist Variable', 'Geist', ui-sans-serif, system-ui, sans-serif;
+	--font-mono: 'Geist Mono Variable', 'Geist Mono', ui-monospace, SFMono-Regular, monospace;
+
+	/* type scale */
+	--text-hero: 44px;
+	--text-hero--line-height: 1.1;
+	--text-hero--letter-spacing: -0.03em;
+	--text-hero--font-weight: 600;
+
+	--text-h1: 30px;
+	--text-h1--line-height: 1.25;
+	--text-h1--letter-spacing: -0.02em;
+	--text-h1--font-weight: 600;
+
+	--text-h2: 20px;
+	--text-h2--line-height: 1.35;
+	--text-h2--letter-spacing: -0.01em;
+	--text-h2--font-weight: 600;
+
+	--text-h3: 16px;
+	--text-h3--line-height: 1.4;
+	--text-h3--font-weight: 600;
+
+	--text-body: 14px;
+	--text-body--line-height: 1.7;
+
+	--text-nav: 13px;
+	--text-nav--line-height: 1.5;
+
+	--text-code: 13px;
+	--text-code--line-height: 1.6;
+
+	--text-eyebrow: 11px;
+	--text-eyebrow--line-height: 1.4;
+	--text-eyebrow--letter-spacing: 0.08em;
+	--text-eyebrow--font-weight: 500;
+
+	--radius-sm: 4px;
+	--radius: 6px;
+	--radius-lg: 8px;
+
+	/* Shell dimensions, so the layout never needs an arbitrary value. */
+	--container-content: 720px;
+	--container-sidebar: 240px;
+	--container-toc: 200px;
 }
 
+/* Shiki's css-variables theme emits --syn-token-*; the design tokens above
+   are --syn-*. This is the bridge between the two naming schemes. */
+:root {
+	--syn-background: transparent;
+	--syn-foreground: var(--syn-plain);
+	--syn-token-keyword: var(--syn-keyword);
+	--syn-token-string: var(--syn-string);
+	--syn-token-string-expression: var(--syn-string);
+	--syn-token-comment: var(--syn-comment);
+	--syn-token-constant: var(--syn-number);
+	--syn-token-function: var(--syn-plain);
+	--syn-token-parameter: var(--syn-plain);
+	--syn-token-punctuation: var(--syn-punctuation);
+	--syn-token-link: var(--syn-keyword);
+	--syn-token-inserted: var(--syn-plain);
+	--syn-token-deleted: var(--syn-plain);
+	--syn-token-changed: var(--syn-plain);
+}
+
+/* One global default so borders never need a colour utility repeated everywhere. */
 @layer base {
-  body { @apply bg-bg text-fg text-body antialiased; }
+	* {
+		border-color: var(--color-border);
+	}
+
+	body {
+		@apply bg-bg text-fg font-sans text-body antialiased;
+	}
+
+	/* Comments are the only italic on the site. */
+	.shiki span[style*='--syn-token-comment'] {
+		font-style: italic;
+	}
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*,
+	*::before,
+	*::after {
+		animation-duration: 0.01ms !important;
+		transition-duration: 0.01ms !important;
+	}
 }

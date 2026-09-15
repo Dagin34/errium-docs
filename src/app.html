@@ -3,7 +3,15 @@
 	<head>
 		<meta charset="utf-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<meta name="text-scale" content="scale" />
+		<script>
+			// Applied before first paint so the theme never flashes.
+			// Dark is the default, so only an explicit 'light' choice stamps the attribute.
+			try {
+				if (localStorage.getItem('errium-theme') === 'light') {
+					document.documentElement.dataset.theme = 'light';
+				}
+			} catch (e) {}
+		</script>
 		%sveltekit.head%
 	</head>
 	<body data-sveltekit-preload-data="hover">
