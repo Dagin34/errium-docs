@@ -42,6 +42,7 @@
 		use:copyCode
 		class="text-body
 			[&_a]:underline [&_a]:decoration-border-strong [&_a]:underline-offset-4 [&_a]:transition-colors [&_a]:duration-150 [&_a]:ease-out hover:[&_a]:decoration-fg
+			[&_a]:focus-visible:outline-2 [&_a]:focus-visible:outline-offset-2 [&_a]:focus-visible:outline-fg [&_a]:focus-visible:rounded-sm
 			[&_blockquote]:my-6 [&_blockquote]:border-l [&_blockquote]:pl-4 [&_blockquote]:text-fg-muted
 			[&_code:not(pre_code)]:rounded-sm [&_code:not(pre_code)]:border [&_code:not(pre_code)]:bg-bg-subtle [&_code:not(pre_code)]:px-1 [&_code:not(pre_code)]:font-mono [&_code:not(pre_code)]:text-[0.9em] [&_code:not(pre_code)]:break-words
 			[&_h2]:mb-4 [&_h2]:mt-12 [&_h2]:scroll-mt-24 [&_h2]:text-h2 [&_h2]:text-fg

@@ -79,7 +79,7 @@
 				tabindex={selected === tab ? 0 : -1}
 				onclick={() => store.set(group, tab)}
 				onkeydown={(e) => onKeydown(e, i)}
-				class="-mb-px border-b px-1 py-2 text-nav transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg
+				class="-mb-px border-b px-2 py-2 text-nav transition-colors duration-150 ease-out focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg
 					{selected === tab ? 'border-fg text-fg' : 'border-transparent text-fg-muted hover:text-fg'}"
 			>
 				{tab}

@@ -42,13 +42,16 @@
 	<div class="flex flex-wrap gap-12">
 		{#each columns as column (column.label)}
 			<div class="flex min-w-32 flex-col gap-3">
-				<h2 class="font-mono text-eyebrow uppercase text-fg-muted">{column.label}</h2>
-				<ul class="flex flex-col gap-2">
+				<!-- Not a heading: labels a link list, not a document section. -->
+				<p id={`footer-${column.label}`} class="font-mono text-eyebrow uppercase text-fg-muted">
+					{column.label}
+				</p>
+				<ul aria-labelledby={`footer-${column.label}`} class="flex flex-col gap-1">
 					{#each column.links as link (link.title)}
 						<li>
 							<a
 								href={link.href}
-								class="text-nav text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+								class="block py-1 text-nav text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 							>
 								{link.title}
 							</a>

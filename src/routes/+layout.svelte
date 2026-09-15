@@ -81,6 +81,17 @@
 	actual modal rather than one that only looks like it.
 -->
 <div class="min-h-dvh" inert={drawerOpen || undefined}>
+	<!--
+		Lets keyboard and screen reader users jump the header and sidebar
+		straight to the page content. Visually hidden until focused.
+	-->
+	<a
+		href="#main"
+		class="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded focus:border focus:bg-bg-elevated focus:px-4 focus:py-2 focus:text-nav focus:text-fg"
+	>
+		Skip to content
+	</a>
+
 	<Header
 		bind:menuButton
 		bind:searchButton
@@ -90,7 +101,7 @@
 	/>
 
 	{#if isLanding}
-		<main class="mx-auto w-full max-w-content px-6 py-24">
+		<main id="main" tabindex="-1" class="mx-auto w-full max-w-content px-6 py-24">
 			{@render children()}
 		</main>
 		<div class="mx-auto w-full max-w-content px-6">
@@ -105,7 +116,7 @@
 				<Sidebar groups={data.navGroups} />
 			</aside>
 
-			<main class="min-w-0 flex-1 px-0 py-12 lg:px-12">
+			<main id="main" tabindex="-1" class="min-w-0 flex-1 px-0 py-12 lg:px-12">
 				<div class="mx-auto w-full max-w-content">
 					{@render children()}
 					<Footer />

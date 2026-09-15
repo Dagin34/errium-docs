@@ -38,19 +38,19 @@
 			onclick={onmenu}
 			aria-label="Open navigation"
 			aria-expanded={drawerOpen}
-			class="grid size-8 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg lg:hidden"
+			class="grid size-8 shrink-0 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg lg:hidden"
 		>
 			<Menu size={16} aria-hidden="true" />
 		</button>
 
 		<a
 			href="/"
-			class="font-mono font-semibold text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			class="shrink-0 rounded py-1 font-mono font-semibold text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 		>
 			{SITE.name}
 		</a>
 
-		<VersionBadge />
+		<span class="hidden sm:inline"><VersionBadge /></span>
 
 		<div class="flex-1"></div>
 
@@ -59,7 +59,7 @@
 			type="button"
 			onclick={() => searchButton && onsearch(searchButton)}
 			aria-label="Search documentation"
-			class="flex items-center gap-2 rounded border px-2 py-1 text-nav text-fg-muted transition-colors duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			class="flex shrink-0 items-center gap-2 rounded border px-2 py-2 text-nav text-fg-muted transition-colors duration-150 ease-out hover:border-border-strong hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 		>
 			<Search size={14} aria-hidden="true" />
 			<span class="hidden sm:inline">Search</span>
@@ -69,7 +69,7 @@
 		<a
 			href={SITE.links.repo}
 			aria-label="Errium on GitHub"
-			class="grid size-8 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			class="grid size-8 shrink-0 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 		>
 			<GithubMark size={16} />
 		</a>
@@ -77,7 +77,7 @@
 		<a
 			href={SITE.links.pypi}
 			aria-label="Errium on PyPI"
-			class="grid size-8 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+			class="grid size-8 shrink-0 place-items-center rounded text-fg-muted transition-colors duration-150 ease-out hover:text-fg focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 		>
 			<Package size={16} aria-hidden="true" />
 		</a>

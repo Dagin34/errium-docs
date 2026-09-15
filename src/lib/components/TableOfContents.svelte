@@ -55,7 +55,8 @@
 
 {#if headings.length > 0}
 	<nav aria-label="On this page" class="flex flex-col gap-3 py-8">
-		<h2 class="font-mono text-eyebrow uppercase text-fg-muted">On this page</h2>
+		<!-- Not a heading: it labels a nav region, not a document section. -->
+		<p class="font-mono text-eyebrow uppercase text-fg-muted">On this page</p>
 		<ul class="flex flex-col gap-2">
 			{#each headings as heading (heading.id)}
 				<li>
