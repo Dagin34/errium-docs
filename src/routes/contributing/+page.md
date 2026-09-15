@@ -71,5 +71,11 @@ Before submitting:
 
 ## Documentation
 
-The library repository also builds an mkdocs site from its root `.md` files;
-`uv run mkdocs serve` previews it.
+This site is the documentation. It is a separate SvelteKit project, so a change
+to what the docs *say* lives here rather than in the library repository.
+
+The library repository still carries `README.md`, `ARCHITECTURE.md`,
+`ROADMAP.md`, `CHANGELOG.md` and `CONTRIBUTING.md`, and those remain the source
+of truth for anyone reading the code directly — keep them accurate alongside a
+code change. As of 0.1.2 the MkDocs site that used to publish them at
+`dagin34.github.io/errium` is retired and serves only a notice pointing here.

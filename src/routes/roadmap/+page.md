@@ -31,6 +31,8 @@ adding thin adapters on top of it rather than changing it.
   packages ship `py.typed`.
 - **CI** — GitHub Actions running `ruff check`, `ruff format --check`, `mypy`
   and `pytest` across Python 3.11 and 3.12 on every push and PR to `main`.
+- **Documentation site** — this site, replacing the earlier MkDocs build. Since
+  0.1.2 the package's `Homepage` and `Documentation` URLs point here.
 
 ## Planned
 

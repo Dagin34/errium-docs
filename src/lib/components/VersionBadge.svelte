@@ -10,7 +10,12 @@
 
 		(async () => {
 			try {
-				const res = await fetch(SITE.links.pypiJson);
+				// PyPI sends `cache-control: max-age=900`, so a plain fetch can be
+				// answered from the browser's HTTP cache with a version that is up
+				// to 15 minutes stale — and it stays stale across reloads. Forcing
+				// revalidation means a release that lands after the last deploy
+				// still shows up.
+				const res = await fetch(SITE.links.pypiJson, { cache: 'no-cache' });
 				if (!res.ok) return;
 				const data = await res.json();
 				if (!cancelled && data?.info?.version) version = data.info.version;

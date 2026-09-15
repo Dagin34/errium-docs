@@ -9,6 +9,20 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## 0.1.2 — 2026-09-15
+
+A documentation-only release. No code changes; published so the new
+documentation site is linked from the PyPI project page, which snapshots
+project metadata and the README per version.
+
+**Changed**
+
+- Documentation moved to this site. The `Homepage` and `Documentation` project
+  URLs now point here instead of at the previous MkDocs site on GitHub Pages,
+  and the README links here.
+- The MkDocs site at `dagin34.github.io/errium` is retired. It now serves only
+  a notice pointing to the new domain.
+
 ## 0.1.1 — 2026-09-03
 
 A documentation-only release. No code changes; published so the updated README

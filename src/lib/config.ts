@@ -5,10 +5,16 @@ export const SITE = {
 		'Errium normalizes uncaught exceptions, HTTP exceptions, and validation errors into one consistent, frontend-safe JSON response — across FastAPI, Flask, Django Ninja, and Django REST Framework.',
 
 	/**
-	 * Baked in at build time so the header badge renders immediately and never
-	 * causes layout shift. Verified against pyproject.toml.
+	 * The version the badge shows. Baked in at build time so it renders
+	 * immediately with no layout shift, and so it stays correct even when the
+	 * live PyPI lookup cannot run — PyPI serves that JSON with
+	 * `cache-control: max-age=900`, and the request can also be blocked by an
+	 * extension or fail offline.
+	 *
+	 * This is the guarantee; the fetch is an enhancement on top of it. Bump it
+	 * when tracking a release. Verified against pyproject.toml at v0.1.2.
 	 */
-	versionFallback: '0.1.1',
+	versionFallback: '0.1.2',
 
 	/** Where this site is served from. Used for canonical and og:url tags. */
 	url: 'https://errium.dagmawi.et',
