@@ -1,0 +1,19 @@
+@import "tailwindcss";
+
+:root {
+  --bg: #0A0A0A;
+  --fg: #EDEDED;
+  --syn-keyword: #8AA9C9;
+  --syn-comment: #848484;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-fg: var(--fg);
+  --text-body: 14px;
+  --text-body--line-height: 1.7;
+}
+
+@layer base {
+  body { @apply bg-bg text-fg text-body antialiased; }
+}
