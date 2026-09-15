@@ -32,7 +32,7 @@
 	type="button"
 	onclick={copy}
 	aria-label={copied ? 'Copied' : `Copy ${what}`}
-	class="grid size-7 place-items-center rounded-sm border bg-bg-subtle text-fg-muted transition-colors duration-150 ease-out pointer-fine:opacity-0 group-hover:opacity-100 hover:border-border-strong hover:text-fg focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
+	class="grid size-8 place-items-center rounded-sm border bg-bg-subtle text-fg-muted transition-colors duration-150 ease-out pointer-fine:opacity-0 group-hover:opacity-100 hover:border-border-strong hover:text-fg focus-visible:opacity-100 focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-fg"
 >
 	{#if copied}
 		<Check size={14} aria-hidden="true" />

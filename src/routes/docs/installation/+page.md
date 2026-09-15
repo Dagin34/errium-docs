@@ -5,19 +5,73 @@ group: Getting Started
 order: 2
 ---
 
+<script>
+	import Tabs from '$lib/components/Tabs.svelte';
+	import TabPanel from '$lib/components/TabPanel.svelte';
+	import Callout from '$lib/components/Callout.svelte';
+</script>
+
 Errium requires **Python 3.11+**. The base install ships the core plus the
 FastAPI adapter; every other framework is an extra.
 
 ## Install
 
+<Tabs group="installer" tabs={['pip', 'uv']}>
+<TabPanel value="pip" index={0}>
+
 ```bash
 pip install errium
 ```
 
-## Framework extras
+</TabPanel>
+<TabPanel value="uv" index={1}>
 
-```bash:requirements
-pip install "errium[flask]"
+```bash
+uv pip install errium
 ```
 
-Inline `code` and a [link](https://pypi.org/project/errium/) for checking.
+</TabPanel>
+</Tabs>
+
+## Framework extras
+
+Flask, Django Ninja, and Django REST Framework each ship as an extra. FastAPI
+needs no extra — it is part of the base install.
+
+<Tabs group="installer" tabs={['pip', 'uv']}>
+<TabPanel value="pip" index={0}>
+
+```bash
+pip install "errium[flask]"   # Flask
+pip install "errium[ninja]"   # Django Ninja
+pip install "errium[drf]"     # Django REST Framework
+```
+
+</TabPanel>
+<TabPanel value="uv" index={1}>
+
+```bash
+uv pip install "errium[flask]"   # Flask
+uv pip install "errium[ninja]"   # Django Ninja
+uv pip install "errium[drf]"     # Django REST Framework
+```
+
+</TabPanel>
+</Tabs>
+
+<Callout variant="warning">
+
+Errium depends on `fastapi`, not `fastapi[standard]`, so it stays light for
+Flask and Django users who have no use for a Starlette server. If you were
+relying on Errium to pull in a server, install one yourself — for example
+`uv pip install uvicorn`.
+
+</Callout>
+
+## Type checking
+
+All five packages — `errium`, `errium_core`, `errium_flask`, `errium_ninja`,
+and `errium_drf` — ship a `py.typed` marker, so mypy and pyright read Errium's
+annotations directly with no stub package required.
+
+Next, wire it into your app in the [Quickstart](/docs/quickstart).

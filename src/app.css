@@ -106,6 +106,14 @@
 	--container-content: 720px;
 	--container-sidebar: 240px;
 	--container-toc: 200px;
+	--container-shell: 1600px;
+}
+
+/* Header height, and the viewport remainder beneath it. The sticky columns
+   are sized from these rather than from inline calc(). */
+:root {
+	--header-h: 3.5rem;
+	--below-header-h: calc(100dvh - 3.5rem);
 }
 
 /* Shiki's css-variables theme emits --syn-token-*; the design tokens above
