@@ -15,16 +15,22 @@ lets you intervene.
 
 ## FastAPI — `errium`
 
-Two entry points, deliberately.
+Three entry points, deliberately, wired by `errium.install(app)`.
 
 `ErriumMiddleware` is a Starlette `BaseHTTPMiddleware` wrapping `call_next` in
-`try`/`except`. It registers `FastAPIHTTPExceptionClassifier` (200) and
-`FastAPIValidationErrorClassifier` (210).
+`try`/`except`. It catches uncaught exceptions and assigns the request's trace
+id.
 
-`validation_exception_handler` is registered separately against
-`RequestValidationError`, because Starlette resolves that through FastAPI's
-exception-handler mechanism rather than through middleware exception
-propagation. It additionally runs `ValidationNormalizer`. See
+`http_exception_handler` is registered against Starlette's `HTTPException`.
+Starlette's `ExceptionMiddleware` turns an `HTTPException` into a response
+*inside* user middleware, so the middleware never sees it; this handler is what
+makes `FastAPIHTTPExceptionClassifier` (200) reachable.
+
+`validation_exception_handler` is registered against `RequestValidationError`,
+because Starlette resolves that through FastAPI's exception-handler mechanism
+too. It additionally runs `ValidationNormalizer`.
+
+All three use one engine, stored on `app.state.errium_engine`. See
 [FastAPI](/docs/fastapi).
 
 ## Flask — `errium_flask`
@@ -60,13 +66,24 @@ gives it catch-everything coverage without middleware, and it mirrors DRF's
 
 <Callout variant="note">
 
-The DRF adapter builds its `ClassificationEngine` **once at module import**, as
-a module-level `_engine`, rather than per call. The other three build theirs
-per middleware instance, per extension instance, or per registration call. It
-makes no difference to behaviour, but it matters if you are registering
+The DRF adapter builds its default engine lazily on first use, from
+`settings.ERRIUM["CLASSIFIERS"]`; `make_exception_handler()` builds one bound to
+its own engine instead. The other adapters build theirs per middleware
+instance, per extension instance, or per registration call. Classifiers added
+with `errium.register(...)` reach all of them. See
 [custom classifiers](/docs/custom-classifiers).
 
 </Callout>
+
+## Django helpers — `errium_django`
+
+Ninja and DRF only see exceptions raised inside their views. `errium_django`
+covers the rest: `handler400/403/404/500` URLconf handlers and
+`ErriumDjangoMiddleware`, which converts exceptions from plain views and later
+middleware (recorded through the `got_request_exception` signal, since Django
+wraps each middleware layer in its own error conversion) and Ninja's bare 405.
+JSON is only returned when the client prefers it or the path matches
+`ERRIUM_JSON_PATH_PREFIXES`. See [Django helpers](/docs/django).
 
 ## A deliberate duplication
 
@@ -74,14 +91,14 @@ makes no difference to behaviour, but it matters if you are registering
 `errium_ninja` and `errium_drf` — duplicated, not shared.
 
 That is intentional. Each adapter package depends only on `errium_core`, never
-on another adapter. Factoring the Django classifiers into a shared
-`errium_django` package would mean a DRF user installing Ninja's adapter, or a
-fifth package existing solely to hold two small classes.
+on another adapter. The cost is two copies of about twenty lines. The benefit is
+that the dependency graph stays a star — core at the centre, adapters at the
+points, no edges between them.
 
-The cost is two copies of about twenty lines. The benefit is that the
-dependency graph stays a star — core at the centre, adapters at the points,
-no edges between them. For a library whose whole architecture is about not
-importing frameworks you don't use, that trade is the consistent one.
+The Django exceptions that *every* Django adapter needs, though, live in the
+core: `DjangoExceptionClassifier` detects them by duck-typing (no Django
+import), so Ninja, DRF and `errium_django` share one implementation without
+depending on each other.
 
 ## Adding a new adapter
 

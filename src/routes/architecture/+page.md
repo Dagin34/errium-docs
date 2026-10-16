@@ -5,8 +5,8 @@ group: Architecture
 order: 1
 ---
 
-Errium is five packages: a framework-agnostic core, and one thin adapter per
-supported framework.
+Errium is six packages: a framework-agnostic core, one thin adapter per
+supported framework, and a small set of Django helpers.
 
 ```text
 src/
@@ -14,7 +14,8 @@ src/
 ├── errium/          # FastAPI / Starlette adapter
 ├── errium_flask/    # Flask adapter
 ├── errium_ninja/    # Django Ninja adapter
-└── errium_drf/      # Django REST Framework adapter
+├── errium_drf/      # Django REST Framework adapter
+└── errium_django/   # URLconf handlers + middleware for errors outside Ninja/DRF views
 ```
 
 ## The core imports no framework
@@ -29,9 +30,11 @@ It still has to recognise their exception types, so it **duck-types** instead:
 # Is this a FastAPI request validation error?
 is_fastapi_val = exc.__class__.__name__ == "RequestValidationError"
 
-# Is this a SQLAlchemy error?
+# Is this a database error? (SQLAlchemy, django.db, sqlite3, psycopg, ...)
 return any(
-    klass.__module__.startswith("sqlalchemy.") for klass in type(exc).__mro__
+    klass.__module__ == module or klass.__module__.startswith(module + ".")
+    for klass in type(exc).__mro__
+    for module in _DB_MODULES
 )
 ```
 
@@ -43,9 +46,9 @@ This is the decision everything else follows from:
 
 - **The core stays dependency-light.** A Flask user doesn't inherit SQLAlchemy;
   a Django user doesn't inherit Starlette.
-- **Database classification works without SQLAlchemy installed.** If it isn't
-  there, no exception will ever have a `sqlalchemy.` module path, and the
-  classifier simply never matches.
+- **Database and Django classification work without those packages installed.**
+  If SQLAlchemy or Django isn't there, no exception will ever have its module
+  path, and the classifier simply never matches.
 - **Adding a framework never requires touching the core.** A new adapter is
   purely additive.
 

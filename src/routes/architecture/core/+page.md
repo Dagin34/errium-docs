@@ -9,7 +9,7 @@ order: 2
 	import Callout from '$lib/components/Callout.svelte';
 </script>
 
-Everything in `errium_core` falls into six groups.
+Everything in `errium_core` falls into a handful of groups: contracts, classification, the shared pipeline, formatting, normalization, settings, and tracing.
 
 ## Contracts
 
@@ -51,12 +51,15 @@ ordered list. Both are covered in
 Two classifiers are always registered on construction:
 
 **`ValidationExceptionClassifier`** (priority 150) matches a Pydantic
-`ValidationError` or anything class-named `RequestValidationError`, and always
-returns `VALIDATION_ERROR` with a 422.
+`ValidationError` or anything class-named `RequestValidationError`, and returns
+`VALIDATION_ERROR` with a 422 — or `BAD_REQUEST` with a 400 when every error is
+`json_invalid` (the body was not parseable JSON).
 
-**`DatabaseExceptionClassifier`** (priority 140) detects SQLAlchemy errors by
-walking the MRO for a `sqlalchemy.` module path — no SQLAlchemy import. If the
-exception is an `IntegrityError` whose message contains any of these markers:
+**`DatabaseExceptionClassifier`** (priority 140) detects database errors by
+walking the MRO for a module path under `sqlalchemy`, `django.db`, `sqlite3`,
+`psycopg`, `psycopg2`, `asyncpg`, `pymysql` or `MySQLdb` — no import of any of
+them. If the exception is an `IntegrityError` (or a driver's `UniqueViolation`)
+whose message contains any of these markers:
 
 ```python
 _DUPLICATE_MARKERS = (
@@ -67,7 +70,7 @@ _DUPLICATE_MARKERS = (
 )
 ```
 
-it returns `DUPLICATE_RESOURCE` with a 409. Any other SQLAlchemy error returns
+it returns `DUPLICATE_RESOURCE` with a 409. Any other database error returns
 `DATABASE_ERROR` with a 500.
 
 <Callout variant="note">
@@ -79,11 +82,47 @@ differently would fall through to `DATABASE_ERROR`.
 
 </Callout>
 
+**`DjangoExceptionClassifier`** (`django_native.py`, priority 190) maps Django's
+own exceptions — `PermissionDenied`, `SuspiciousOperation`,
+`RequestDataTooBig`, `ObjectDoesNotExist`, `Http404`, and Django's
+`ValidationError` — by the same duck-typing, with a configurable validation
+status (422 for Ninja, 400 for DRF). It is not an engine default; the Ninja,
+DRF and `errium_django` engines register it.
+
 **`GenericExceptionClassifier`** is the fallback and sits outside the sorted
 list. It always returns `INTERNAL_SERVER_ERROR` with a 500.
 
 `status_mapping.py` holds `category_for_status_code()`, the shared table in
 [Error categories](/docs/categories).
+
+### The registry
+
+`errium_core/registry.py` holds a process-wide list of classifiers. `register()`
+builds one from `(exception type, status, category, message)`;
+`register_classifier()` adds any classifier. Every `ClassificationEngine`
+merges the registry into its own list when it classifies, so one registration
+reaches every adapter. `classifiers/loader.py` resolves dotted-path strings for
+settings-driven registration (DRF, `errium_django`).
+
+## The pipeline
+
+`errium_core/pipeline.py`
+
+`handle_error(exc, engine=..., formatter=..., details=..., headers=...,
+trace_id=...)` is the one classify → format path every adapter calls. It:
+
+- classifies, builds the `StandardizedError`, and formats it;
+- merges allow-listed protocol headers from the exception
+  (`headers.py`: `Allow`, `Retry-After`, `WWW-Authenticate`, `Location`,
+  `Content-Range`) and adds `X-Trace-Id`;
+- logs on the `errium` logger — `ERROR` with traceback for 5xx, `WARNING`
+  for the rest;
+- **never raises.** If anything in that path fails it returns a generic 500
+  envelope with a fresh `trace_id`, so a hostile exception cannot turn Errium's
+  own handler into an HTML error page.
+
+`safe.py` holds `safe_str(exc, limit)`, which renders an exception without ever
+raising (`str`, then `repr`, then the class name) and truncates it.
 
 ## Formatting
 
@@ -92,8 +131,14 @@ list. It always returns `INTERNAL_SERVER_ERROR` with a 500.
 `ErrorFormatter` is a `Protocol` — `format(error: StandardizedError) -> dict[str, Any]`.
 `DefaultFormatter` is the only implementation. It emits the seven standard
 fields, reads `get_settings().debug`, and applies the 5xx sanitization rule or
-attaches the debug block accordingly. See
-[Debug vs. production](/docs/debug-mode).
+attaches the debug block accordingly. 502/503/504 keep a
+`SERVICE_UNAVAILABLE`/`TIMEOUT` code in production; every other 5xx collapses
+to `INTERNAL_SERVER_ERROR`. See [Debug vs. production](/docs/debug-mode).
+
+`limits.py` bounds the output: `details` to 50 entries (with a `_truncated`
+sentinel), `debug.message` to 2,000 characters and `debug.stack_trace` to
+20,000. For validation errors the debug text is rebuilt from `loc`/`msg`/`type`
+so the submitted `input` is never echoed.
 
 ## Normalization
 
@@ -106,9 +151,10 @@ detail in [Validation normalization](/docs/validation).
 
 `errium_core/config/settings.py`
 
-`ErriumSettings(debug: bool)` is a process-global singleton, sourced from
-`ERRIUM_DEBUG` at import time. `get_settings()` and `set_settings()` read and
-replace it.
+`ErriumSettings(debug, trust_request_id)` is a process-global singleton,
+sourced by `load_settings()` from `ERRIUM_DEBUG` and `ERRIUM_TRUST_REQUEST_ID`
+at import time (`true`/`1`/`yes`/`on`, whitespace stripped). The mode is logged
+once at import. `get_settings()` and `set_settings()` read and replace it.
 
 Because it is read at import, changing the environment variable after the
 module is loaded has no effect — use `set_settings()` instead, which is how the
@@ -118,5 +164,7 @@ test suite exercises both modes.
 
 `errium_core/tracing/trace.py`
 
-`generate_trace_id()` returns `str(uuid4())`. That is the entire module. See
-[Trace IDs](/docs/trace-ids).
+`generate_trace_id()` returns `str(uuid4())`. `resolve_trace_id(request_id)`
+picks the id for a request — a fresh uuid4, or a valid inbound `X-Request-ID`
+when `ERRIUM_TRUST_REQUEST_ID` is on. `current_trace_id()` reads a `ContextVar`
+holding the id of the request in flight. See [Trace IDs](/docs/trace-ids).

@@ -91,7 +91,7 @@ Pages are `.md` at `src/routes/**/+page.md`. Frontmatter is `title`, `descriptio
 ### Verify before claiming done
 
 ```bash
-npm run build     # must be clean; expect 22 HTML files + sitemap.xml
+npm run build     # must be clean; expect 23 HTML files + sitemap.xml
 find .vercel/output/static -name "*.html" | wc -l
 ```
 

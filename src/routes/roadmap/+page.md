@@ -31,8 +31,27 @@ adding thin adapters on top of it rather than changing it.
   packages ship `py.typed`.
 - **CI** — GitHub Actions running `ruff check`, `ruff format --check`, `mypy`
   and `pytest` across Python 3.11 and 3.12 on every push and PR to `main`.
+- **0.2.0 hardening** — found by an outside-in black-box test of 0.1.2:
+  `errium.install(app)` and an `HTTPException` handler for FastAPI; an error path
+  that cannot raise; ten more error categories and consistent production
+  sanitization; logging and trace-id exposure; protocol headers; Django-native and
+  ORM error classification; the `errium_django` helpers; public classifier
+  registration; bounded response sizes. See the [changelog](/changelog).
 - **Documentation site** — this site, replacing the earlier MkDocs build. Since
   0.1.2 the package's `Homepage` and `Documentation` URLs point here.
+
+## Known limitations
+
+- **Mid-stream failures cannot be normalized.** If a streaming response raises
+  after its first chunk, the status line and headers are already sent, so the
+  connection simply ends. This holds on every adapter.
+- A mounted FastAPI sub-app needs its own `errium.install(...)`.
+- Django's `DEBUG = True` technical 500 page replaces `handler500`, and errors
+  in middleware listed before `ErriumDjangoMiddleware` are only covered by
+  `handler500`.
+- Message wording for validation errors still differs between frameworks, and
+  Flask's JSON key order is alphabetical.
+- Development status is still Alpha.
 
 ## Planned
 

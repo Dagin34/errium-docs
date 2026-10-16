@@ -33,6 +33,7 @@ and asserts on the full JSON response shape:
 | Flask | `flask.Flask.test_client()` |
 | Django Ninja | `ninja.testing.TestClient` |
 | DRF | `rest_framework.test.APIRequestFactory` against `@api_view` views |
+| `errium_django` | `django.test.Client` against a test URLconf (`tests/django_urlconf.py`) with `override_settings` |
 
 Going through the real integration point is the whole value here. A unit test
 can confirm `FastAPIValidationErrorClassifier` returns a 422; only an
@@ -47,6 +48,11 @@ you are unsure whether a given exception is caught on a given framework, the
 integration suite answers it more reliably than any prose.
 
 </Callout>
+
+A few suites cut across adapters: `test_never_raises.py` drives hostile
+exceptions (a raising `__str__`, unprintable arguments, a 500 KB message)
+through all four, and `test_logging_and_trace.py` asserts log records, the
+`X-Trace-Id` header and request-id handling on each.
 
 ## `tests/conftest.py`
 
