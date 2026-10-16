@@ -35,8 +35,9 @@ uv pip install errium
 
 ## Framework extras
 
-Flask, Django Ninja, and Django REST Framework each ship as an extra. FastAPI
-needs no extra — it is part of the base install.
+Flask, Django Ninja, and Django REST Framework each ship as an extra, and the
+`django` extra installs just Django for the [Django helpers](/docs/django).
+FastAPI needs no extra — it is part of the base install.
 
 <Tabs group="installer" tabs={['pip', 'uv']}>
 <TabPanel value="pip" index={0}>
@@ -45,6 +46,7 @@ needs no extra — it is part of the base install.
 pip install "errium[flask]"   # Flask
 pip install "errium[ninja]"   # Django Ninja
 pip install "errium[drf]"     # Django REST Framework
+pip install "errium[django]"  # Django helpers only
 ```
 
 </TabPanel>
@@ -54,6 +56,7 @@ pip install "errium[drf]"     # Django REST Framework
 uv pip install "errium[flask]"   # Flask
 uv pip install "errium[ninja]"   # Django Ninja
 uv pip install "errium[drf]"     # Django REST Framework
+uv pip install "errium[django]"  # Django helpers only
 ```
 
 </TabPanel>
@@ -66,12 +69,26 @@ Flask and Django users who have no use for a Starlette server. If you were
 relying on Errium to pull in a server, install one yourself — for example
 `uv pip install uvicorn`.
 
+The base install requires `fastapi` and `starlette`, so the Flask, Ninja and DRF
+extras install them too. Their adapters never import FastAPI at run time; it is
+install footprint only.
+
 </Callout>
 
 ## Type checking
 
-All five packages — `errium`, `errium_core`, `errium_flask`, `errium_ninja`,
-and `errium_drf` — ship a `py.typed` marker, so mypy and pyright read Errium's
-annotations directly with no stub package required.
+All six packages — `errium`, `errium_core`, `errium_flask`, `errium_ninja`,
+`errium_drf` and `errium_django` — ship a `py.typed` marker, so mypy and pyright
+read Errium's annotations directly with no stub package required.
+
+## Version
+
+Each package exposes `__version__`, read from the installed distribution:
+
+```python
+import errium
+
+print(errium.__version__)
+```
 
 Next, wire it into your app in the [Quickstart](/docs/quickstart).

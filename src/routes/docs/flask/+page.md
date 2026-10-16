@@ -34,6 +34,11 @@ Registering on `Exception` is sufficient because Flask dispatches both raised
 `HTTPException`s — from `flask.abort()`, say — and unhandled generic exceptions
 to it when no more specific handler exists.
 
+The extension also takes `classifiers=[...]` (added to the default engine) and
+`engine=` (replaces it) — see
+[custom classifiers](/docs/custom-classifiers). It adds a `before_request` hook
+that assigns the request's trace id, available as `flask.g.errium_trace_id`.
+
 ## App factory pattern
 
 If you build your app with a factory, construct the extension first and attach
@@ -61,6 +66,10 @@ def create_app():
 matches any Werkzeug `HTTPException`, maps `exc.code` through the shared
 [status-code table](/docs/categories), and uses `exc.description` as the
 message. An exception with no code falls back to 500.
+
+Protocol headers on the exception are kept: Werkzeug's
+`TooManyRequests(retry_after=30)` produces `Retry-After: 30`, and a 405 carries
+`Allow`. Every error response also has an `X-Trace-Id` header.
 
 Uncaught exceptions of any other type reach `GenericExceptionClassifier` and
 return `INTERNAL_SERVER_ERROR`.

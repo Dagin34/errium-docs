@@ -10,9 +10,9 @@ order: 3
 	import TabPanel from '$lib/components/TabPanel.svelte';
 </script>
 
-Pick your framework. Each one needs a single integration point, except FastAPI,
-which needs two for a reason worth understanding — see the
-[FastAPI page](/docs/fastapi).
+Pick your framework. Each one needs a single integration point. Django projects
+can add the [Django helpers](/docs/django) to cover errors raised outside the
+view layer.
 
 ## Wire it up
 
@@ -21,17 +21,13 @@ which needs two for a reason worth understanding — see the
 
 ```python:main.py
 from fastapi import FastAPI
-from fastapi.exceptions import RequestValidationError
-from errium import ErriumMiddleware
-from errium.handlers.validation_handler import validation_exception_handler
+import errium
 
 app = FastAPI()
 
-# 1. Catch raw and HTTP exceptions.
-app.add_middleware(ErriumMiddleware)
-
-# 2. Catch request validation errors.
-app.add_exception_handler(RequestValidationError, validation_exception_handler)
+# Catches uncaught exceptions, HTTPException (incl. 404/405), and
+# request validation errors.
+errium.install(app)
 ```
 
 </TabPanel>
@@ -109,7 +105,9 @@ With Errium, the same failure arrives in the standard contract:
 ```
 
 Every error your API returns now uses that shape, whether it came from a
-validation failure, a `404`, or an uncaught `KeyError`.
+validation failure, a `404`, or an uncaught `KeyError`. Each one is also logged
+on the `errium` logger with its `trace_id`, and the same ID comes back in an
+`X-Trace-Id` header — see [Trace IDs](/docs/trace-ids).
 
 Read the field-by-field contract on
 [The response contract](/docs/response-shape).

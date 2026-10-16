@@ -23,7 +23,10 @@ api = NinjaAPI()
 register_errium(api)
 ```
 
-`register_errium(api)` registers one shared handler against four exception
+`register_errium(api)` also accepts `classifiers=[...]` and `engine=` — see
+[custom classifiers](/docs/custom-classifiers).
+
+It registers one shared handler against four exception
 types via `api.exception_handler(...)`:
 
 - `ninja.errors.ValidationError`
@@ -69,6 +72,37 @@ the wrapper; Ninja already flattens those.
 
 | Classifier | Priority | Handles |
 |---|---|---|
+| `NinjaResponseValidationClassifier` | 215 | A bare pydantic `ValidationError` → 500 |
 | `NinjaValidationErrorClassifier` | 210 | Ninja's `ValidationError` → 422 |
 | `NinjaHttpErrorClassifier` | 200 | `HttpError` and subclasses |
 | `DjangoHttp404Classifier` | 200 | `Http404`, e.g. from `get_object_or_404` |
+| `DjangoExceptionClassifier` | 190 | Django's own exceptions (below) |
+
+## Django's own exceptions
+
+Overriding Ninja's `Exception` handler would otherwise discard Django's usual
+mapping and turn everything into a 500. `DjangoExceptionClassifier` restores it:
+
+| Raised in a view | Response |
+|---|---|
+| `PermissionDenied` | 403 `AUTHORIZATION_ERROR` |
+| `SuspiciousOperation` | 400 `BAD_REQUEST` |
+| `RequestDataTooBig`, `TooManyFieldsSent` | 413 `PAYLOAD_TOO_LARGE` |
+| `ObjectDoesNotExist` (and `Model.DoesNotExist`) | 404 `RESOURCE_NOT_FOUND` |
+| `django.core.exceptions.ValidationError` | 422 `VALIDATION_ERROR`, with `details` |
+| `django.db.IntegrityError` (unique) | 409 `DUPLICATE_RESOURCE` |
+| other `django.db` errors | 500 (`DATABASE_ERROR` in debug) |
+
+## Response-schema mismatches are a 500
+
+When an endpoint declares `response=` and returns data that does not match, Ninja
+raises a bare pydantic `ValidationError` while serializing. That is a bug in
+your server, not in the request, so Errium reports it as a **500** instead of a
+422 that would blame the client. Request validation
+(`ninja.errors.ValidationError`) is still 422.
+
+## Errors outside your views
+
+An unknown URL, a URL-converter mismatch, and Ninja's own 405 never reach these
+handlers; Django renders them as HTML. The [Django helpers](/docs/django)
+cover them.
