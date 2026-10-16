@@ -12,7 +12,8 @@ frontend-safe JSON response shape.
 
 It supports four frameworks today — FastAPI, Flask, Django Ninja, and Django
 REST Framework — through a framework-agnostic core (`errium_core`) plus one
-thin adapter package per framework.
+thin adapter package per framework, and a small set of
+[Django helpers](/docs/django) for errors raised outside the view layer.
 
 ## The problem
 
@@ -34,8 +35,8 @@ whoever consumes them.
 
 Errium runs every error through one pipeline, in four stages.
 
-1. **Intelligent middleware.** `ErriumMiddleware` — or the equivalent entry point
-   for your framework — transparently intercepts the request lifecycle.
+1. **Intelligent middleware.** `errium.install(app)` — or the equivalent entry
+   point for your framework — transparently intercepts the request lifecycle.
 2. **Classification.** `ClassificationEngine` resolves the error's category,
    status code, and user-facing message by running it past an ordered list of
    classifiers.
@@ -43,6 +44,9 @@ Errium runs every error through one pipeline, in four stages.
    collapse into a flat `{field: message}` map.
 4. **Environment-aware sanitization.** Full tracebacks in development, sealed
    internals in production — switched by a single environment variable.
+
+Every handled exception is also logged with its `trace_id`, so the ID a client
+reports leads straight to the traceback.
 
 The result is that every error your API returns looks the same, no matter what
 threw it:

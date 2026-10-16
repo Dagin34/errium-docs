@@ -29,6 +29,15 @@ becomes:
 }
 ```
 
+<Callout variant="note">
+
+A body that is not parseable JSON is not a validation failure of a field, so it
+is reported as **400 `BAD_REQUEST`** ("Malformed request body.", no `details`)
+on every adapter. Well-formed JSON that breaks your schema is still 422
+`VALIDATION_ERROR` (400 on DRF).
+
+</Callout>
+
 ## The three steps
 
 **1. Strip the location prefix.** If the first `loc` segment is one of `body`,
@@ -75,7 +84,11 @@ normalizer = ValidationNormalizer(
 ## Which adapters use it
 
 The FastAPI validation handler, the Flask extension, and the Ninja adapter all
-run `ValidationNormalizer`.
+run `ValidationNormalizer`. A Django `ValidationError` raised on Ninja or DRF is
+flattened too: `{field: "message; message"}`, with `_` for non-field errors.
+
+`details` is capped at 50 entries; see
+[The response contract](/docs/response-shape).
 
 <Callout variant="note">
 
@@ -85,8 +98,10 @@ Pydantic's `loc`/`type`/`msg` list, and one that needs no template lookup. So
 `errium_drf.normalizers.flatten_drf_errors` does its own recursive flattening
 instead, producing the same flat `{field: message}` result.
 
-Nested DRF structures flatten with dotted keys, list items get an index
-suffix like `items[0].name`, and messages with no field fall under
-`non_field_errors`.
+Nested DRF structures flatten with dotted keys and list items get an index
+suffix like `items[0].name`. Several messages for one field are joined with
+`"; "`, and errors with no field — DRF's `non_field_errors`, at any depth —
+use the key `_` (`address._` when nested), so DRF's internal name does not
+reach your clients.
 
 </Callout>

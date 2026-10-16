@@ -54,8 +54,10 @@ priority. A classifier without a `priority` attribute defaults to 100.
 
 | Classifier | Priority | Registered by |
 |---|---|---|
-| Adapter validation classifiers | 210 | Each adapter |
+| Classifiers added with [`errium.register(...)`](/docs/custom-classifiers) | 300 | You |
+| Adapter validation classifiers | 210–215 | Each adapter |
 | Adapter HTTP classifiers | 200 | Each adapter |
+| `DjangoExceptionClassifier` | 190 | The Ninja and DRF adapters |
 | `ValidationExceptionClassifier` | 150 | Always, on construction |
 | `DatabaseExceptionClassifier` | 140 | Always, on construction |
 | Unspecified | 100 | Default for anything else |
@@ -80,11 +82,29 @@ what lets the DRF adapter [never return `None`](/docs/drf).
 ## The always-registered classifiers
 
 `ValidationExceptionClassifier` (150) matches a Pydantic `ValidationError`, or
-anything whose class name is `RequestValidationError`. It always returns
-`VALIDATION_ERROR` with a 422.
+anything whose class name is `RequestValidationError`. It returns
+`VALIDATION_ERROR` with a 422 — unless every error is a `json_invalid` one,
+meaning the body was not parseable JSON, in which case it returns
+`BAD_REQUEST` with a 400 and the message "Malformed request body." on every
+adapter.
 
-`DatabaseExceptionClassifier` (140) matches SQLAlchemy exceptions by walking
-the MRO for a `sqlalchemy.` module path — with no SQLAlchemy dependency. See
-[Core building blocks](/architecture/core).
+`DatabaseExceptionClassifier` (140) matches database exceptions by walking the
+MRO for a known module path — SQLAlchemy, Django's ORM (`django.db`), and the
+`sqlite3`, `psycopg`, `psycopg2`, `asyncpg` and `pymysql` drivers — with no
+dependency on any of them. See [Core building blocks](/architecture/core).
+
+`DjangoExceptionClassifier` (190) is detected the same duck-typed way. It
+maps Django's own exceptions to the status Django itself would use:
+`PermissionDenied` → 403, `SuspiciousOperation` → 400,
+`RequestDataTooBig` / `TooManyFieldsSent` → 413,
+`ObjectDoesNotExist` → 404, and Django's `ValidationError` → 422 (400 on DRF).
+The Ninja and DRF adapters register it; the FastAPI and Flask engines do not.
+
+## One registry, every engine
+
+Classifiers registered with `errium.register(...)` or
+`errium_core.register_classifier(...)` live in a process-wide registry that every
+engine merges in at classification time, sorted by priority with its own. That
+is why one registration applies to every adapter and every entry point.
 
 Next: [writing your own](/docs/custom-classifiers).
