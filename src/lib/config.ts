@@ -14,7 +14,7 @@ export const SITE = {
 	 * This is the guarantee; the fetch is an enhancement on top of it. Bump it
 	 * when tracking a release. Verified against pyproject.toml at v0.1.2.
 	 */
-	versionFallback: '0.1.2',
+	versionFallback: '0.2.0',
 
 	/** Where this site is served from. Used for canonical and og:url tags. */
 	url: 'https://errium.dagmawi.et',

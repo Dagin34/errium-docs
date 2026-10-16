@@ -9,7 +9,7 @@ The format follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 and the project adheres to
 [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## 0.2.0 — unreleased
+## 0.2.0 — 2026-10-16
 
 Found by an outside-in black-box test of 0.1.2 (17 findings). This release adds
 new `code` values, so clients that switch exhaustively on `code` should handle
